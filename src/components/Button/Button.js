@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 export const Button = ({ onLoadMore }) => {
     return (
-        <Btn type="button" onClick={onLoadMore}>Load more</Btn>
+        <Btn type="button"  onClick={onLoadMore}>Load more</Btn>
     )
 }
 

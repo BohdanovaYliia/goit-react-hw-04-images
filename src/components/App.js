@@ -54,14 +54,15 @@ export class App extends Component {
     })
   }
 
-  onModalClose = () => {
+  onModalClose = (evt) => {
+    evt.preventDefault();
+    
     this.setState({
       currentPicture: '',
     })
   }
 
-  loadMore = (evt) => {
-    evt.preventDefault();
+  loadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
     }));
@@ -79,10 +80,10 @@ export class App extends Component {
       <Wraper>
         <Searchbar onSubmit={this.handleSearchBarSubmit} />
         {status === 'idle' && <Text>Enter your request please</Text>}
-        {status === 'pending' && <Loader />}
         {status === 'rejected' && <Text>{error.message}</Text>}
         {status === 'resolved' && pictures.length === 0 && <Text>Sorry, no results were found for your search. Enter another request</Text>}
-        {status === 'resolved' && pictures.length > 0 && <ImageGallery pictures={pictures} onShowModal={this.onShowModal} />}
+        {pictures.length > 0 && <ImageGallery pictures={pictures} onShowModal={this.onShowModal} />}
+        {status === 'pending' && <Loader />}
         {status === 'resolved' && pictures.length > 0 && <Button onLoadMore={this.loadMore} />}
         {currentPicture && <Modal closeModal={this.onModalClose} url={currentPicture}/>}
       </Wraper>
