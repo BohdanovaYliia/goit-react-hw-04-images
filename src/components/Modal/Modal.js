@@ -15,13 +15,13 @@ export class Modal extends Component {
 
     handleKeyDown = e => {
         if (e.code === 'Escape') {
-            this.props.closeModal();
+            this.props.closeModal(e);
         }
     }
 
     handleBackdropClick = e => {
         if(e.currentTarget === e.target) {
-            this.props.closeModal();
+            this.props.closeModal(e);
         }
     }
 

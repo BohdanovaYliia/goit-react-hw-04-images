@@ -1,7 +1,7 @@
 import { GalleryItem, GalleryItemImg } from "./ImageGalleryItem.styled";
 import PropTypes from "prop-types";
 
-export const ImageGalleryItem = ({ picture:  { id, webformatURL, largeImageURL, tags }, onClick }) => {
+export const ImageGalleryItem = ({ picture:  { webformatURL, largeImageURL, tags }, onClick }) => {
 
     return (
         <GalleryItem>
@@ -11,11 +11,10 @@ export const ImageGalleryItem = ({ picture:  { id, webformatURL, largeImageURL, 
 }
 
 ImageGalleryItem.propTypes = {
-    picture: PropTypes.exact({
-        id: PropTypes.number,
-        webformatURL: PropTypes.string,
-        tags: PropTypes.string,
-        largeImageURL: PropTypes.string,
+    picture: PropTypes.shape({
+        webformatURL: PropTypes.string.isRequired,
+        tags: PropTypes.string.isRequired,
+        largeImageURL: PropTypes.string.isRequired,
     }),
     onClick: PropTypes.func.isRequired,
 };
