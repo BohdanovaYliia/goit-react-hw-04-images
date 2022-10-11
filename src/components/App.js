@@ -69,7 +69,9 @@ export class App extends Component {
   }
 
   handleSearchBarSubmit = request => {
-    this.setState({ request, pictures: [], page: 1, });
+    if (this.state.request !== request) {
+      this.setState({ request, pictures: [], page: 1, });
+    }
   }
 
   render() {
