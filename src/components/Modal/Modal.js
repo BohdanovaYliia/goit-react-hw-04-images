@@ -1,46 +1,43 @@
-import { Component } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { Overlay, ModalWindow } from "./Modal.styled";
 
-
 const modalRoot = document.querySelector('#modal-root');
 
-export class Modal extends Component {
+export function Modal({ closeModal, url }) {    
 
-    static propTypes = {
-        closeModal: PropTypes.func.isRequired,
-        url: PropTypes.string.isRequired,
-    }
-
-    handleKeyDown = e => {
-        if (e.code === 'Escape') {
-            this.props.closeModal(e);
+    const handleBackdropClick = evt => {
+        if(evt.currentTarget === evt.target) {
+            closeModal(evt);
         }
     }
 
-    handleBackdropClick = e => {
-        if(e.currentTarget === e.target) {
-            this.props.closeModal(e);
+    useEffect(() => {
+        const handleKeyDown = evt => {
+        if (evt.code === 'Escape') {
+            closeModal(evt);
         }
-    }
+        }
+        
+        window.addEventListener('keydown', handleKeyDown);
 
-    componentDidMount () {
-        window.addEventListener('keydown', this.handleKeyDown)
-    }
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }, [closeModal])
 
-    componentWillUnmount () {
-        window.removeEventListener('keydown', this.handleKeyDown)
-    }
-
-    render () {
-        return createPortal(
-            <Overlay onClick={this.handleBackdropClick}>
-                <ModalWindow>
-                    <img src={this.props.url} alt=""/>
-                </ModalWindow>
-            </Overlay>,
-            modalRoot
-        )
-    };
+    return createPortal(
+        <Overlay onClick={handleBackdropClick}>
+            <ModalWindow>
+                <img src={url} alt="" />
+            </ModalWindow>
+        </Overlay>,
+        modalRoot
+    );
 }
+
+Modal.propTypes = {
+    closeModal: PropTypes.func.isRequired,
+    url: PropTypes.string.isRequired,
+};

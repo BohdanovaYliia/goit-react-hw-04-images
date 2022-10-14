@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import { Searchbar } from 'components/Searchbar/Searchbar';
 import { Loader } from 'components/Loader/Loader';
 import { ImageGallery } from 'components/ImageGallery/ImageGallery';
@@ -8,86 +8,66 @@ import * as API from "../services/api";
 import { Wraper, Text } from "./App.styled";
 
 
-export class App extends Component {
-  state = {
-    request: '',
-    pictures: [],
-    page: 1,
-    currentPicture: '',
-    error: null,
-    status: 'idle',
-  }
+export function App() {
+  const [request, setRequest] = useState('');
+  const [pictures, setPictures] = useState([]);
+  const [page, setPage] = useState(1);
+  const [currentPicture, setCurrentPicture] = useState('');
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState('idle');
 
-  componentDidUpdate(_, prevState) {
-    const prevRequest = prevState.request;
-    const newRequest = this.state.request;
-    const prevPage = prevState.page;
-    const newPage = this.state.page;
-
-    if(prevPage !== newPage || prevRequest !== newRequest) {
-      this.addPictures(newRequest, newPage);
-      }
-  }
-
-  addPictures = async (request, page) => {
+  const addPictures = async (request, page) => {
     try {
-      this.setState({
-        status: 'pending',
-      });
+      setStatus('pending');
       const pictures = await API.loadPictures(request, page);
-      
-      this.setState(prevState => ({
-        pictures: [...prevState.pictures, ...pictures],
-        status: 'resolved'
-      }));
+
+      setPictures(prevPictures => [...prevPictures, ...pictures]);
+      setStatus('resolved');
     } catch (error) {
-      this.setState({
-        error: error.message,
-        status: 'rejected'
-      })
+      setError(error.message);
+      setStatus('rejected');
     }
+  };
+
+  useEffect(() => {
+    if (request !== '') {
+      addPictures(request, page)
+    }
+  }, [request, page])
+
+
+  const onShowModal = (url) => {
+    setCurrentPicture(url);
   }
 
-  onShowModal = (url) => {
-    this.setState({
-      currentPicture: url,
-    })
-  }
-
-  onModalClose = (evt) => {
+  const onModalClose = (evt) => {
     evt.preventDefault();
     
-    this.setState({
-      currentPicture: '',
-    })
+    setCurrentPicture('');
   }
 
-  loadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+  const loadMore = () => {
+    setPage(page => page + 1);
   }
 
-  handleSearchBarSubmit = request => {
-    if (this.state.request !== request) {
-      this.setState({ request, pictures: [], page: 1, });
+  const handleSearchBarSubmit = newRequest => {
+    if (request !== newRequest) {
+      setRequest(newRequest);
+      setPictures([]);
+      setPage(1);
     }
   }
-
-  render() {
-    const { pictures, currentPicture, error, status } = this.state;
 
     return (
       <Wraper>
-        <Searchbar onSubmit={this.handleSearchBarSubmit} />
+        <Searchbar onSubmit={handleSearchBarSubmit} />
         {status === 'idle' && <Text>Enter your request please</Text>}
         {status === 'rejected' && <Text>{error.message}</Text>}
         {status === 'resolved' && pictures.length === 0 && <Text>Sorry, no results were found for your search. Enter another request</Text>}
-        {pictures.length > 0 && <ImageGallery pictures={pictures} onShowModal={this.onShowModal} />}
+        {pictures.length > 0 && <ImageGallery pictures={pictures} onShowModal={onShowModal} />}
         {status === 'pending' && <Loader />}
-        {status === 'resolved' && pictures.length > 0 && <Button onLoadMore={this.loadMore} />}
-        {currentPicture && <Modal closeModal={this.onModalClose} url={currentPicture}/>}
+        {status === 'resolved' && pictures.length > 0 && <Button onLoadMore={loadMore} />}
+        {currentPicture && <Modal closeModal={onModalClose} url={currentPicture}/>}
       </Wraper>
     );
-  }
 }

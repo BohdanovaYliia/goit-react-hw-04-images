@@ -1,31 +1,29 @@
-import { Component } from "react";
+import { useState } from "react";
 import Notiflix from 'notiflix';
 import { FormWrap, SearchForm, SearchFormBtn, SearchFormBtnLabel, SearchFormInput } from "./Searchbar.styled";
 import PropTypes from "prop-types";
 
-export class Searchbar extends Component {
-    state = {    
-        request: '',
+export function Searchbar({ onSubmit }) {
+    const [request, setRequest] = useState('');
+
+    const handleRequestChange = evt => {
+        const { value } = evt.currentTarget;
+        setRequest(value.toLowerCase());
     }
 
-    handleRequestChange = evt => {
-        this.setState({request: evt.currentTarget.value.toLowerCase()});
-    }
-
-    handleSubmit = evt => {
+    const handleSubmit = evt => {
         evt.preventDefault();
 
-        if (this.state.request.trim() === '') {
+        if (request.trim() === '') {
             Notiflix.Notify.failure('Enter your request!');
             return;
         }
-        this.props.onSubmit(this.state.request);
+        onSubmit(request);
     }
 
-    render() {
     return (
         <FormWrap>
-            <SearchForm onSubmit={this.handleSubmit}>
+            <SearchForm onSubmit={handleSubmit}>
                 <SearchFormBtn type="submit">
                     <SearchFormBtnLabel>Search</SearchFormBtnLabel>
                 </SearchFormBtn>
@@ -35,13 +33,12 @@ export class Searchbar extends Component {
                     autoComplete="off"
                     autoFocus
                     placeholder="Search images and photos"
-                    value={this.state.request}
-                    onChange={this.handleRequestChange}
+                    value={request}
+                    onChange={handleRequestChange}
                 />
             </SearchForm>
         </FormWrap>
     );
-  }
 }
 
 Searchbar.propTypes = {
