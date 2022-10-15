@@ -35,11 +35,6 @@ export function App() {
     }
   }, [request, page])
 
-
-  const onShowModal = (url) => {
-    setCurrentPicture(url);
-  }
-
   const onModalClose = (evt) => {
     evt.preventDefault();
     
@@ -64,7 +59,7 @@ export function App() {
         {status === 'idle' && <Text>Enter your request please</Text>}
         {status === 'rejected' && <Text>{error.message}</Text>}
         {status === 'resolved' && pictures.length === 0 && <Text>Sorry, no results were found for your search. Enter another request</Text>}
-        {pictures.length > 0 && <ImageGallery pictures={pictures} onShowModal={onShowModal} />}
+        {pictures.length > 0 && <ImageGallery pictures={pictures} onShowModal={setCurrentPicture} />}
         {status === 'pending' && <Loader />}
         {status === 'resolved' && pictures.length > 0 && <Button onLoadMore={loadMore} />}
         {currentPicture && <Modal closeModal={onModalClose} url={currentPicture}/>}
